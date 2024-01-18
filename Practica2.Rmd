@@ -72,6 +72,61 @@ summarise(count = n(), .groups = 'drop')
 5.  **Para cada enlace, seguirlo e indicar si está activo (podemos usar el código de status HTTP al hacer una petición a esa URL). En este paso podemos usar la función HEAD de la librería “httr”, que en vez de descargarse la página como haría GET, solo consultamos los atributos de la página o fichero destino. HEAD nos retorna una lista de atributos, y de entre estos hay uno llamado “header” que contiene más atributos sobre la página buscada. Si seguimos podemos encontrar el “status_code” en “resultado\$status_code”. El “status_code” nos indica el resultado de la petición de página o fichero. Este código puede indicar que la petición ha sido correcta (200), que no se ha encontrado (404), que el acceso está restringido (403), etc. 4 Actividad Evaluable 2 Data Driven Securiyt – CyberSecurity Management - 2024 • Tened en cuenta que hay enlaces con la URL relativa, con forma “/xxxxxx/xxxxx/a.html”. En este caso, podemos indicarle como “handle” el dominio de la página que estamos tratando, o añadirle el dominio a la URL con la función “paste”. • Tened en cuenta que puede haber enlaces externos con la URL absoluta, con forma “<http://xxxxxx/xxxx/a.html>” (o https), que los trataremos directamente. • Tened en cuenta que puede haber enlaces que apunten a subdominios distintos, con forma “//subdominio/xxxx/xxxx/a.html”. En este caso podemos adjuntarle el prefijo “https:” delante, convirtiendo la URL en absoluta. • Tened en cuenta URLS internas con tags, como por ejemplo “#search-p”. Estos apuntan a la misma página en la que estamos, pero diferente altura de página. Equivale a acceder a la URL relativa de la misma página en la que estamos. Es recomendado poner un tiempo de espera entre petición y petición de pocos segundos (comando “Sys.sleep”), para evitar ser “baneados” por el servidor. Para poder examinar las URLs podemos usar expresiones regulares, funciones como “grep”, o mirar si en los primeros caracteres de la URL encontramos “//” o “http”. Para tratar las URLs podemos usar la ayuda de la función “paste”, para manipular cadenas de caracteres y poder añadir prefijos a las URLs si fuera necesario.**
 
 ```{r 5, echo=FALSE}
+library(httr)
+library(dplyr)
+#Instalación de librerías. Creamos un df para guardar los resultados. Verificamos si la URL es absoluta o relativa. Repetimos sobre los enlaces y obtención de el código de estado. Utilizamos Sys.sleep con 1s para no sobrecargar la URL.
+results <- data.frame(
+Enlace = links_url,
+Texto = links_text,
+Visto = integer(length(links_url)),
+Estado = integer(length(links_url)),
+stringsAsFactors = FALSE
+)
+make_absolute_url <- function(url, domain = "https://www.mediawiki.org") {
+  if (startsWith(url, "http")) {
+    return(url)
+  } else {
+    return(paste0(domain, url))
+  }
+}
+for (i in seq_along(results$Enlace)) {
+absolute_url <- make_absolute_url(results$Enlace[i])
+response <- HEAD(absolute_url)
+results$Estado[i] <- status_code(response)
+Sys.sleep(1)
+}
+
+results <- results %>%
+group_by(Enlace, Texto) %>%
+summarise(
+Visto = n(), #
+Estado = first(Estado),
+.groups = 'drop'
+  )
+
+
 
 
 ```
+
+**Pregunta 2:**
+Elaborad, usando las librerías de gráficos base y qplot (ggplot2), una infografía sobre los
+datos obtenidos. Tal infografía será una reunión de gráficos donde se muestren los
+siguientes detalles
+
+**1. Un histograma con la frecuencia de aparición de los enlaces, pero separado por
+URLs absolutas (con “http…”) y URLs relativas.**
+
+**2. Un gráfico de barras indicando la suma de enlaces que apuntan a otros
+dominios o servicios (distinto a https://www.mediawiki.org en el caso de
+ejemplo) vs. la suma de los otros enlaces.
+Aquí queremos distinguir enlaces que apuntan a mediawiki versus el resto.
+Sabemos que las URLs relativas ya apuntan dentro, por lo tanto hay que analizar
+las URLs absolutas y comprobar que apunten a https://www.mediawiki.org.**
+
+**3. Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro
+análisis.
+Por ejemplo, si hay 6 enlaces con status “200” y 4 enlaces con status “404”, la
+tarta mostrará un 60% con la etiqueta “200” y un 40% con la etiqueta “404”. Este
+gráfico lo uniremos a los anteriores. El objetivo final es obtener una imagen que
+recopile los gráficos generados**
