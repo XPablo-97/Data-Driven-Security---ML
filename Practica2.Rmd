@@ -119,7 +119,17 @@ Estado = first(Estado),
 **2. Un gráfico de barras indicando la suma de enlaces que apuntan a otros dominios o servicios (distinto a <https://www.mediawiki.org> en el caso de ejemplo) vs. la suma de los otros enlaces. Aquí queremos distinguir enlaces que apuntan a mediawiki versus el resto. Sabemos que las URLs relativas ya apuntan dentro, por lo tanto hay que analizar las URLs absolutas y comprobar que apunten a <https://www.mediawiki.org>.**
 
 ```{r 23, echo=FALSE}
-
+library(ggplot2)
+es_url_interna <- function(url) {
+  return(grepl("https://www.mediawiki.org", url))
+}
+links_df$tipo_url <- ifelse(es_url_interna(links_df$url), "interna", "externa")
+conteo_urls <- table(links_df$tipo_url)
+links_df_sin_na <- na.omit(links_df)
+conteo_urls_sin_na <- table(links_df_sin_na$tipo_url)
+ggplot(data = as.data.frame(conteo_urls_sin_na), aes(x = Var1, y = Freq)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Tipo de URL", y = "Cantidad de enlaces", title = "Comparación de enlaces internos vs externos")
 
 ```
 
