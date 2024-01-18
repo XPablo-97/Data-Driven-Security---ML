@@ -83,7 +83,7 @@ Estado = integer(length(links_url)),
 stringsAsFactors = FALSE
 )
 make_absolute_url <- function(url, domain = "https://www.mediawiki.org") {
-  if (startsWith(url, "http")) {
+  if (startsWith(url, "http")) { #si comienza con http es relativa
     return(url)
   } else {
     return(paste0(domain, url))
@@ -99,17 +99,15 @@ Sys.sleep(1)
 results <- results %>%
 group_by(Enlace, Texto) %>%
 summarise(
-Visto = n(), #
+Visto = n(), #Cuenta el número de filas en cada grupo
 Estado = first(Estado),
-.groups = 'drop'
+.groups = 'drop' #Indicamos a dplyr que no queremos que el resultado esté agrupado.
   )
 
 
 
 
 ```
-
-**Pregunta 2:** Elaborad, usando las librerías de gráficos base y qplot (ggplot2), una infografía sobre los datos obtenidos. Tal infografía será una reunión de gráficos donde se muestren los siguientes detalles
 
 **1. Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.**
 
@@ -126,6 +124,23 @@ Estado = first(Estado),
 ```
 
 **3. Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro análisis. Por ejemplo, si hay 6 enlaces con status “200” y 4 enlaces con status “404”, la tarta mostrará un 60% con la etiqueta “200” y un 40% con la etiqueta “404”. Este gráfico lo uniremos a los anteriores. El objetivo final es obtener una imagen que recopile los gráficos generados**
+
+```{r 3, echo=FALSE}
+
+
+```
+
+**2. Análisis de logs de servidor usando R (parte II)**
+
+**1. Descomprimir el fichero comprimido que contiene los registros del servidor, y a partir de los datos extraídos, cargar en data frame los registros con las peticiones servidas.**
+
+```{r 667, echo=FALSE}
+#Descomprimimos el archivo y los leemos en un DF
+unzip("epa-http.zip")
+datos4 <- read.csv('epa-http.csv',sep = " ",header = FALSE)
+```
+
+2.  **Incluid en el documento un apartado con la descripción de los datos analizados: fuente, tipología, descripción de la información contenida (los diferentes campos) y sus valores.**
 
 ```{r 3, echo=FALSE}
 
