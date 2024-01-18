@@ -56,6 +56,15 @@ links_url <- xpathSApply(parsedHtml, "//a", xmlGetAttr, 'href')
 ```
 
 ```{r 4, echo=FALSE}
+#Convertir variables en df. Eliminamos enlaces vacíos. Recuento de apariciones de cada par único de texto y URL
+library(dplyr)
+links_df <- data.frame(texto = links_text, url = links_url, stringsAsFactors = FALSE)
+links_df <- na.omit(links_df)
+links_df <- subset(links_df, texto != "" & url != "")
+links_counts <- links_df %>%
+group_by(texto, url) %>%
+summarise(count = n(), .groups = 'drop')
+
 
 
 ```
