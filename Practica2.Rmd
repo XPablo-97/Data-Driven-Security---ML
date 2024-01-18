@@ -23,8 +23,13 @@ summary(cars)
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r 1, echo=FALSE}
+library(XML)
+library(httr)
+html <- GET("https://www.mediawiki.org")
+content <- content(html, as = "text")
+parsedHtml <- htmlParse(content, asText = TRUE)
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
