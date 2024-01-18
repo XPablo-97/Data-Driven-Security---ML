@@ -136,7 +136,14 @@ ggplot(data = as.data.frame(conteo_urls_sin_na), aes(x = Var1, y = Freq)) +
 **3. Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro análisis. Por ejemplo, si hay 6 enlaces con status “200” y 4 enlaces con status “404”, la tarta mostrará un 60% con la etiqueta “200” y un 40% con la etiqueta “404”. Este gráfico lo uniremos a los anteriores. El objetivo final es obtener una imagen que recopile los gráficos generados**
 
 ```{r 63, echo=FALSE}
-
+library(ggplot2)
+status_counts <- table(results$Estado) #Calculamos frecuencia de cada estado
+status_df <- as.data.frame(status_counts)#Convierte la tabla en un df
+names(status_df) <- c("Estado", "Frecuencia") #nombre a las columnas
+status_df$Porcentaje <- status_df$Frecuencia / sum(status_df$Frecuencia) * 100 #calculo de porcentajes
+pie_chart <- ggplot(status_df, aes(x = "", y = Porcentaje, fill = Estado)) +
+  geom_bar(width = 1, stat = "identity") + coord_polar("y") +  theme_void() +  geom_text(aes(label = paste0(round(Porcentaje, 1), "%")), position = position_stack(vjust = 0.5)) + scale_fill_discrete(name = "Estado HTTP") +   labs(title = "Distribución de porcentajes de los estados HTTP") #Creación y ajustes de la pie chart
+print(pie_chart)
 
 ```
 
