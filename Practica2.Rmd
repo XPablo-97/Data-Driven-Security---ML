@@ -160,6 +160,26 @@ datos4 <- read.csv('epa-http.csv',sep = " ",header = FALSE)
 2.  **Incluid en el documento un apartado con la descripción de los datos analizados: fuente, tipología, descripción de la información contenida (los diferentes campos) y sus valores.**
 
 ```{r 34, echo=FALSE}
+str(datos4)
+summary(datos4)
+unique(datos4$campo_categorico)
+
+cat("La fuente de datos es un archivo CSV con registros de logs de un servidor web. Contiene información sobre las solicitudes HTTP realizadas al servidor.\n")
+
+cat("La tipología de los datos es la siguiente:\n")
+cat("- V1: Dirección IP del cliente que realizó la solicitud.\n")
+cat("- V2: Fecha y hora de la solicitud.\n")
+cat("- V3: Tipo de solicitud HTTP y la URL solicitada.\n")
+cat("- V4: Código de respuesta HTTP.\n")
+cat("- V5: Tamaño de la respuesta en bytes.\n")
+
+cat("Descripción de la información contenida en cada columna:\n")
+str(datos4)
+cat("\nValores únicos para el campo categórico V4:\n")
+unique(datos4$V4)
+
+cat("Resumen estadístico de las columnas numéricas:\n")
+summary(datos4)
 
 
 ```
@@ -167,7 +187,14 @@ datos4 <- read.csv('epa-http.csv',sep = " ",header = FALSE)
 **Limpieza de los Datos**
 
 **3. Aprovechando que los datos a analizar son los mismos de la primera práctica, para esta entrega es imprescindible que los datos estén en formato de “datos elegantes”.**
+
 ```{r 554, echo=FALSE}
+library(dplyr)
+library(tidyr)
+
+
+
+
 
 
 ```
@@ -184,6 +211,7 @@ datos4 <- read.csv('epa-http.csv',sep = " ",header = FALSE)
 **Análisis de Datos**
 
 5.  **Analizar los distintos tipos de peticiones HTTP (GET, POST, PUT, DELETE) gestionadas por el servidor, identificando la frecuencia de cada una de estas. Repetir el análisis, esta vez filtrando previamente aquellas peticiones correspondientes a recursos ofrecidos de tipo imagen.**
+
 ```{r 941, echo=FALSE}
 
 
@@ -192,12 +220,14 @@ datos4 <- read.csv('epa-http.csv',sep = " ",header = FALSE)
 **Visualización de Resultados**
 
 6.  **Generar al menos 2 gráficos distintos que permitan visualizar alguna característica relevante de los datos analizados. Estos deberán representar por lo menos 1 o 2 variables diferentes del data frame. Describid el gráfico e indicad cualquier observación destacable que se pueda apreciar gracias a la representación gráfica.**
+
 ```{r 948, echo=FALSE}
 
 
 ```
 
 7.  **Generar un gráfico que permita visualizar el número de peticiones servidas a lo largo del tiempo.**
+
 ```{r 923, echo=FALSE}
 
 
