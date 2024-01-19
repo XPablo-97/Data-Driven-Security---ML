@@ -112,7 +112,16 @@ Estado = first(Estado),
 **1. Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.**
 
 ```{r 47, echo=FALSE}
-
+library(dplyr)
+library(ggplot2)
+library(stringr)
+links_df <- links_df %>%
+mutate(tipo_enlace = if_else(str_starts(url, "http"), "Absoluto", "Relativo"))
+ggplot(links_df, aes(x = tipo_enlace)) +
+  geom_bar() +
+  xlab("Tipo de Enlace") +
+  ylab("Frecuencia") +
+  ggtitle("Frecuencia de URLs Absolutas vs Relativas")
 
 ```
 
