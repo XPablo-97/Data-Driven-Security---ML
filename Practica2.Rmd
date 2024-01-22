@@ -203,9 +203,9 @@ ips_get_separate<-tidyr:: separate(datos4,Timestamp,c("d","h","s","ms"),sep=":")
 ips_get_separate$d <- substr(ips_get_separate$d, 2, nchar(ips_get_separate$d))
 ips_get_separate$ms <- substr(ips_get_separate$ms, 1, nchar(ips_get_separate$ms) - 1)
 
-subcadenes<-str_split(datos4$V3," ", simplify = TRUE)
+subcadenes<-str_split(datos4$Petición," ", simplify = TRUE)
 colnames(datos4)<-c("IPs","Timestamp","Petición","Respuesta","Bytes")
-ips_get_separate<-tidyr::separate(ips_get_separate,V3,c("Tipo","URL","Protocolo"),sep=" ")
+ips_get_separate<-tidyr::separate(ips_get_separate,Petición,c("Tipo","URL","Protocolo"),sep=" ")
 colnames(ips_get_separate)<-c("IPs","d","h","s","ms","Tipo","URL","Protocolo","Respuesta","Bytes")
 datos_limpios<-ips_get_separate
 
