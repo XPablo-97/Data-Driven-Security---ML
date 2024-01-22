@@ -241,6 +241,12 @@ datos_agrupados_imagen <- datos_limpios_imagen %>% group_by(Tipo) %>% summarise(
 
 ```{r 948, echo=FALSE}
 
+library(ggplot2)
+#En el 1r creamos un gráfico para poder identificar el número de respuestas con código ok y en errores
+barplot(height = table(datos4$Respuesta), col = "wheat", main = "Código de Respuesta")
+#En el 2o podemos comprovar si las conexiones han sido grandes (muchos bytes) o no.
+barplot(height = table(as.integer(datos4$Bytes)), col = "wheat", main = "Cantidad de Bytes")
+
 
 ```
 
