@@ -117,11 +117,7 @@ library(ggplot2)
 library(stringr)
 links_df <- links_df %>%
 mutate(tipo_enlace = if_else(str_starts(url, "http"), "Absoluto", "Relativo"))
-ggplot(links_df, aes(x = tipo_enlace)) +
-  geom_bar() +
-  xlab("Tipo de Enlace") +
-  ylab("Frecuencia") +
-  ggtitle("Frecuencia de URLs Absolutas vs Relativas")
+hist(links_counts$count)
 
 ```
 
@@ -200,11 +196,18 @@ summary(datos4)
 ```{r 554, echo=FALSE}
 library(dplyr)
 library(tidyr)
+library(stringr)
+ips_get_separate<-tidyr::separate(datos4,timestamp,c("d","h","s","ms"),sep=":")
+#ips_get_separate$d <- gsub("[", "", ips_get_separate$d)
+#ips_get_separate$ms <- gsub("]", "", ips_get_separate$ms)
+ips_get_separate$d <- substr(ips_get_separate$d, 2, nchar(ips_get_separate$d))
+ips_get_separate$ms <- substr(ips_get_separate$ms, 1, nchar(ips_get_separate$ms) - 1)
 
-
-
-
-
+subcadenes<-str_split(datos4$V3," ", simplify = TRUE)
+colnames(datos4)<-c("IPs","Timestamp","Petición","Respuesta","Bytes")
+ips_get_separate<-tidyr::separate(ips_get_separate,V3,c("Tipo","URL","Protocolo"),sep=" ")
+colnames(ips_get_separate)<-c("IPs","d","h","s","ms","Tipo","URL","Protocolo","Respuesta","Bytes")
+datos_limpios<-ips_get_separate
 
 ```
 
@@ -213,7 +216,12 @@ library(tidyr)
 4.  **Identificar el número único de usuarios que han interactuado directamente con el servidor de forma segregada según si los usuarios han tenido algún tipo de error en las distintas peticiones ofrecidas por el servidor.**
 
 ```{r 9999, echo=FALSE}
-
+#Buscamos todos los que en el campo de respuesta empieza por 3 porque son los que salen con errores. Una vez tenemos el número, lo restamos al total para saber los que han funcionado ok
+datos_limpios2 <- subset(datos_limpios, grepl("^3", datos_limpios$Respuesta))
+nrespuestas_error<-length(grep("^3",datos_limpios$Respuesta))
+nrespuestas_ok<-nrow(datos_limpios)-nrespuestas_error
+nrespuestas_error
+nrespuestas_ok
 
 ```
 
@@ -222,8 +230,9 @@ library(tidyr)
 5.  **Analizar los distintos tipos de peticiones HTTP (GET, POST, PUT, DELETE) gestionadas por el servidor, identificando la frecuencia de cada una de estas. Repetir el análisis, esta vez filtrando previamente aquellas peticiones correspondientes a recursos ofrecidos de tipo imagen.**
 
 ```{r 941, echo=FALSE}
-
-
+library(dplyr)
+datos_limpios_imagen<-subset(datos_limpios, grepl("\\.gif$", datos_limpios$URL))
+datos_agrupados_imagen <- datos_limpios_imagen %>% group_by(Tipo) %>% summarise(total = sum(as.integer(Bytes)), n = n())
 ```
 
 **Visualización de Resultados**
@@ -238,6 +247,53 @@ library(tidyr)
 7.  **Generar un gráfico que permita visualizar el número de peticiones servidas a lo largo del tiempo.**
 
 ```{r 923, echo=FALSE}
+
+
+```
+
+8.  **Utilizando un algoritmo de aprendizaje no supervisado, realizad un análisis de clústering con k-means para los datos del servidor. • Para este análisis debéis repetir la ejecución del modelado con distintos valores de k (número de clústeres) con al menos 2 valores diferentes dek.\
+    • A fin de retener algo de información sobre el recurso servido, generad una columna numérica derivada de esta con el número de caracteres de la URL servida**
+
+```{r 903, echo=FALSE}
+library(mltools)
+library(data.table)
+library(cluster)
+
+#eppa_http_one_hot <- one_hot(as.data.table(datos_agrupados_imagen), sparsifyNAs= TRUE)
+
+# Crear datos de ejemplo
+set.seed(123)
+datos <- matrix(as.integer(results$Estado), ncol = 2)
+
+# Especificar el número de clusters (k)
+k <- 3
+k2 <- 1
+
+# Aplicar el algoritmo k-means
+resultados_kmeans <- kmeans(datos, centers = k)
+resultados_kmeans2 <- kmeans(datos, centers = k2)
+# Mostrar los resultados
+print(resultados_kmeans)
+
+
+```
+
+9.  **Representad visualmente en gráficos de tipo scatter plot el resultado de vuestros clústering y interpretad el resultado obtenido (describid las características de los distintos grupos) con los 2 valores distintos de k probados en el apartado anterior en función de los valores de las variables y el número de clúster asignado.**
+
+```{r 9103, echo=FALSE}
+# Crear un gráfico de dispersión con colores según los clusters
+plot(datos, col = resultados_kmeans$cluster, pch = 19, main = "k-means Clustering", xlab = "Variable 1", ylab = "Variable 2")
+
+# Agregar los centroides al gráfico
+points(resultados_kmeans$centers, col = 1:k, pch = 8, cex = 2)
+
+# Crear otro gráfico de dispersión con colores según los clusters
+plot(datos, col = resultados_kmeans2$cluster, pch = 19, main = "k-means Clustering 2", xlab = "Variable 1", ylab = "Variable 2")
+
+# Agregar los centroides al gráfico
+points(resultados_kmeans2$centers, col = 1:k, pch = 5, cex = 2)
+
+# En la comaparcion de los 2 gráficos podemos ver que si solo hay un centro (este se poner en la parte superior izquierda) y si hay 3, se reparte por distintos sitios del gráfico.
 
 
 ```
