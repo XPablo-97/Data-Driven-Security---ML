@@ -247,7 +247,8 @@ datos_agrupados_imagen <- datos_limpios_imagen %>% group_by(Tipo) %>% summarise(
 7.  **Generar un gráfico que permita visualizar el número de peticiones servidas a lo largo del tiempo.**
 
 ```{r 923, echo=FALSE}
-
+# al tener 2 días para hacer la comparativa, hemos elegido ir a comparar por horas. Así podem ver cuales són las que tienen mas peticiones.
+hist(x = as.numeric(datos_limpios$h), breaks = 25, col = "blue", main = "Histograma")
 
 ```
 
